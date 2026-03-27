@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roof Ecologies</title>
+  <style>
+    /* ─── RESET & BASE ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* ─── DESIGN TOKENS ─────────────────────────────────────────────────── */
+    :root {
+      --san: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --ser: Georgia, 'Times New Roman', serif;
+      --ink: #1C1B18;
+      --mid: #9B9991;
+      --rule: #E9E7E1;
+      --off: #F7F6F2;
+      --dark: #111110;
+      --body-color: #60605A;
+    }
+
+    body {
+      background: #fff;
+      color: var(--ink);
+      font-family: var(--san);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { opacity: 0.6; }
+
+    /* ─── ANIMATIONS ────────────────────────────────────────────────────── */
+    @keyframes ki {
+      from { opacity: 0; transform: scale(1.04); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fi {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── IMAGE HOVER ───────────────────────────────────────────────────── */
+    .ih { overflow: hidden; }
+    .ih img {
+      display: block; width: 100%; height: 100%; object-fit: cover;
+      transition: transform 1s cubic-bezier(0.16,1,0.3,1);
+    }
+    .ih:hover img { transform: scale(1.04); }
+
+    /* ─── REVEAL ON SCROLL ──────────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 1.1s cubic-bezier(0.16,1,0.3,1), transform 1.1s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── TYPOGRAPHY HELPERS ────────────────────────────────────────────── */
+    .label {
+      font-family: var(--san);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      font-weight: 500;
+    }
+    .body-text {
+      font-family: var(--ser);
+      font-size: clamp(0.93rem, 1.45vw, 1.06rem);
+      line-height: 1.9;
+      color: var(--body-color);
+      font-weight: 300;
+    }
+
+    /* ─── NAV ───────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 50px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      background: transparent;
+      transition: all 0.5s;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,0.96);
+      border-bottom: 0.5px solid var(--rule);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: #fff;
+      transition: color 0.5s;
+    }
+    nav.scrolled .nav-logo { color: var(--ink); }
+    .nav-links { display: flex; gap: 2.2rem; }
+    .nav-links a {
+      font-size: 0.7rem;
+      letter-spacing: 0.03em;
+      color: #fff;
+      opacity: 0.65;
+      transition: opacity 0.2s, color 0.5s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    nav.scrolled .nav-links a { color: var(--ink); }
+    .nav-right {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.04em;
+      transition: color 0.5s;
+    }
+    nav.scrolled .nav-right { color: var(--mid); }
+
+    /* ─── HERO ──────────────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 520px;
+      overflow: hidden;
+    }
+    #hero img.hero-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover;
+      animation: ki 1.8s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.62) 100%);
+    }
+    .hero-titles {
+      position: absolute;
+      bottom: clamp(2.5rem,6vw,5.5rem);
+      left: clamp(1.5rem,4vw,4rem);
+      animation: fi 1s ease 0.6s both;
+      opacity: 0;
+    }
+    .hero-title-row {
+      display: flex; align-items: baseline; gap: 1rem;
+    }
+    .hero-title-row .num {
+      font-family: var(--san);
+      font-size: 0.58rem;
+      color: rgba(255,255,255,0.38);
+      letter-spacing: 0.1em;
+      min-width: 18px;
+    }
+    .hero-series {
+      position: absolute;
+      bottom: clamp(2.5rem,6vw,5.5rem);
+      right: clamp(1.5rem,4vw,4rem);
+      animation: fi 1s ease 0.9s both;
+      opacity: 0;
+      text-align: right;
+    }
+    .hero-series p:first-child {
+      font-family: var(--san);
+      font-size: 0.57rem;
+      color: rgba(255,255,255,0.38);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .hero-series p:last-child {
+      font-family: var(--san);
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.06em;
+      margin-top: 0.25rem;
+    }
+
+    /* ─── SECTIONS ──────────────────────────────────────────────────────── */
+    .section-intro {
+      padding: clamp(5rem,10vw,9rem) clamp(1.5rem,8vw,10rem);
+    }
+    .section-intro .inner { max-width: 700px; margin: 0 auto; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 0.5px solid var(--rule);
+    }
+    .two-col.gap { gap: clamp(2rem,5vw,6rem); border-top: none; }
+
+    .col-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(2.5rem,5vw,5rem);
+    }
+
+    /* ─── OFF-WHITE SECTION ─────────────────────────────────────────────── */
+    .section-off {
+      background: var(--off);
+      padding: clamp(4rem,7vw,7rem) clamp(1.5rem,4vw,5rem);
+    }
+    .section-off .inner { max-width: 1080px; margin: 0 auto; }
+
+    .section-padded {
+      padding: clamp(4rem,7vw,7rem) clamp(1.5rem,4vw,5rem);
+    }
+    .section-padded .inner { max-width: 1080px; margin: 0 auto; }
+
+    /* ─── TIMELINE ──────────────────────────────────────────────────────── */
+    .timeline-row {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem 0;
+      border-top: 0.5px solid var(--rule);
+      align-items: baseline;
+    }
+    .timeline-row .period {
+      font-family: var(--san);
+      font-size: 0.65rem;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+      min-width: 96px;
+      flex-shrink: 0;
+    }
+    .timeline-row .detail {
+      font-family: var(--ser);
+      font-size: 0.95rem;
+      color: var(--body-color);
+      font-weight: 300;
+      line-height: 1.65;
+    }
+    .timeline-end { border-top: 0.5px solid var(--rule); }
+
+    /* ─── DESIGN PRINCIPLES ─────────────────────────────────────────────── */
+    .section-principles {
+      padding: clamp(4.5rem,8vw,8rem) clamp(1.5rem,4vw,5rem);
+    }
+    .section-principles .inner { max-width: 1080px; margin: 0 auto; }
+
+    .five-col {
+      display: grid;
+      grid-template-columns: repeat(5,1fr);
+      gap: 0;
+    }
+    .principle-col {
+      padding: 0 1.5rem;
+      border-left: 0.5px solid var(--rule);
+    }
+    .principle-col:first-child {
+      border-left: none;
+      padding-left: 0;
+    }
+    .principle-col .num {
+      font-family: var(--san);
+      font-size: 0.55rem;
+      color: var(--mid);
+      letter-spacing: 0.1em;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .principle-col .label-text {
+      font-family: var(--ser);
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--ink);
+      font-weight: 300;
+      margin-bottom: 0.6rem;
+      line-height: 1.25;
+    }
+    .principle-col .detail-text {
+      font-family: var(--ser);
+      font-size: 0.84rem;
+      color: #888882;
+      line-height: 1.78;
+      font-weight: 300;
+    }
+
+    /* ─── FULL-BLEED IMAGE ──────────────────────────────────────────────── */
+    .full-bleed-img img {
+      width: 100%;
+      height: clamp(340px,50vw,700px);
+      object-fit: cover;
+      display: block;
+    }
+    .full-bleed-caption {
+      padding: 0.9rem clamp(1.5rem,4vw,4rem);
+      border-bottom: 0.5px solid var(--rule);
+    }
+    .full-bleed-caption p {
+      font-family: var(--san);
+      font-size: 0.6rem;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── PULLQUOTE ─────────────────────────────────────────────────────── */
+    .section-pullquote {
+      background: var(--dark);
+      padding: clamp(4rem,8vw,8rem) clamp(1.5rem,8vw,12rem);
+    }
+    .pullquote-text {
+      font-family: var(--ser);
+      font-size: clamp(1.05rem,2vw,1.42rem);
+      color: rgba(255,255,255,0.8);
+      line-height: 1.88;
+      font-weight: 300;
+      max-width: 820px;
+      margin: 0 auto;
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* ─── CASE STUDIES ──────────────────────────────────────────────────── */
+    .cs-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 3rem;
+      border-bottom: 0.5px solid var(--rule);
+    }
+    .cs-tab-btn {
+      cursor: pointer;
+      border: none;
+      background: none;
+      text-align: left;
+      padding: 0 2.5rem 1rem 0;
+      border-bottom: 1.5px solid transparent;
+      margin-bottom: -0.5px;
+    }
+    .cs-tab-btn.active { border-bottom-color: var(--ink); }
+    .cs-tab-btn .tab-num {
+      font-family: var(--san);
+      font-size: 0.57rem;
+      color: var(--mid);
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .cs-tab-btn .tab-title {
+      font-family: var(--ser);
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--mid);
+      transition: color 0.2s;
+    }
+    .cs-tab-btn.active .tab-title { color: var(--ink); }
+
+    .cs-panel { display: none; }
+    .cs-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,4vw,4rem); }
+    .cs-panel .cs-img { height: 100%; min-height: 340px; cursor: zoom-in; }
+    .cs-panel .cs-caption {
+      margin-top: 0.7rem;
+      font-family: var(--san);
+      font-size: 0.6rem;
+      color: var(--mid);
+      letter-spacing: 0.03em;
+      line-height: 1.55;
+    }
+
+    .cat-label {
+      font-family: var(--san);
+      font-size: 0.59rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 0.55rem;
+      font-weight: 500;
+    }
+    .cat-label.insight { color: var(--ink); }
+    .cat-points { list-style: none; padding: 0; }
+    .cat-points li {
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-start;
+      margin-bottom: 0.38rem;
+    }
+    .cat-points li .dash {
+      font-family: var(--san);
+      font-size: 0.58rem;
+      color: var(--mid);
+      margin-top: 0.38rem;
+      flex-shrink: 0;
+    }
+    .cat-points li .pt-text {
+      font-family: var(--ser);
+      font-size: 0.9rem;
+      color: var(--body-color);
+      line-height: 1.78;
+      font-weight: 300;
+    }
+    .cat-points li .pt-text.insight {
+      font-style: italic;
+      font-size: 0.97rem;
+      color: var(--ink);
+    }
+    .cat-note {
+      font-family: var(--san);
+      font-size: 0.59rem;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+      margin-top: 0.55rem;
+    }
+    .cat-block { margin-bottom: 1.7rem; }
+
+    /* ─── REFERENCES ────────────────────────────────────────────────────── */
+    .ref-row {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-top: 0.5px solid var(--rule);
+      align-items: baseline;
+    }
+    .ref-row .ref-label {
+      font-family: var(--san);
+      font-size: 0.65rem;
+      color: var(--mid);
+      letter-spacing: 0.02em;
+    }
+    .ref-row .ref-title {
+      font-family: var(--ser);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--ink);
+      font-weight: 300;
+    }
+    .ref-row .ref-pub {
+      font-family: var(--san);
+      font-size: 0.6rem;
+      color: var(--mid);
+      display: block;
+      margin-top: 0.15rem;
+    }
+    .ref-group { margin-bottom: 3rem; }
+    .ref-group-end { border-top: 0.5px solid var(--rule); }
+
+    /* ─── FOOTER ────────────────────────────────────────────────────────── */
+    footer {
+      background: #fff;
+      border-top: 0.5px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem clamp(1.5rem,4vw,4rem);
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    footer span { font-family: var(--san); }
+    footer span:first-child { font-size: 0.65rem; letter-spacing: 0.05em; color: var(--ink); }
+    footer span:not(:first-child) { font-size: 0.6rem; color: var(--mid); }
+
+    /* ─── LIGHTBOX ──────────────────────────────────────────────────────── */
+    #lightbox {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(249,248,244,0.97);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 88vw;
+      max-height: 78vh;
+      object-fit: contain;
+    }
+    #lightbox p {
+      margin-top: 1.5rem;
+      font-family: var(--ser);
+      font-size: 0.82rem;
+      color: #999;
+      font-style: italic;
+      max-width: 540px;
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+    #lightbox-close {
+      position: fixed; top: 1.8rem; right: 2.5rem;
+      background: none; border: none; cursor: pointer;
+      font-family: var(--san);
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      color: #bbb;
+      text-transform: uppercase;
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr !important; }
+      .five-col { grid-template-columns: 1fr 1fr !important; }
+      .nav-links { display: none !important; }
+      .nav-right { display: none !important; }
+      .cs-panel.active { grid-template-columns: 1fr !important; }
+    }
+    @media (max-width: 580px) {
+      .five-col { grid-template-columns: 1fr !important; }
+      .ref-row { grid-template-columns: 1fr !important; }
+      .cs-tabs { flex-direction: column !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══════════════════════════════════════════════════════════════ -->
+<nav id="nav">
+  <span class="nav-logo">Roof Ecologies</span>
+  <div class="nav-links">
+    <a href="#overview">Introduction</a>
+    <a href="#basel">Basel</a>
+    <a href="#principles">Principles</a>
+    <a href="#casestudies">Case Studies</a>
+    <a href="#malaysia">Malaysia</a>
+    <a href="#references">References</a>
+  </div>
+  <span class="nav-right">Basel · Switzerland</span>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <img class="hero-bg" src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=1600&q=85" alt="Rooftop ecology" />
+  <div class="hero-overlay"></div>
+  <div class="hero-titles">
+    <div class="hero-title-row">
+      <span class="num">01</span>
+      <span style="font-family:var(--ser);font-weight:300;font-size:clamp(2.4rem,4.5vw,3.5rem);color:#fff;letter-spacing:-0.02em;line-height:1.08;opacity:0.18">Ecology</span>
+    </div>
+    <div class="hero-title-row">
+      <span class="num">02</span>
+      <span style="font-family:var(--ser);font-weight:300;font-size:clamp(2.7rem,5vw,4.1rem);color:#fff;letter-spacing:-0.02em;line-height:1.08;opacity:0.4">Rooftops</span>
+    </div>
+    <div class="hero-title-row">
+      <span class="num">03</span>
+      <span style="font-family:var(--ser);font-weight:300;font-size:clamp(3rem,5.5vw,4.7rem);color:#fff;letter-spacing:-0.02em;line-height:1.08;opacity:1">Architecture</span>
+    </div>
+  </div>
+  <div class="hero-series">
+    <p>Urban Ecology Series</p>
+    <p>2024</p>
+  </div>
+</section>
+
+<!-- ══ §1 INTRODUCTION ═══════════════════════════════════════════════════ -->
+<section id="overview" class="section-intro">
+  <div class="inner">
+    <p class="label reveal" style="margin-bottom:2.5rem">Introduction</p>
+    <p class="body-text reveal" style="margin-bottom:1.7rem">Roof ecologies refer to the intentional design and integration of ecological systems on rooftops, transforming them into functional landscapes that support environmental performance, biodiversity, and human activity. Unlike conventional green roofs that may be purely aesthetic, roof ecologies emphasise multi-functionality, where roofs act as micro-ecosystems, contributing to climate regulation, water management, and social engagement. This includes systems such as biodiversity roofs, biosolar roofs (green roof + solar panels), blue-green roofs (water retention + vegetation), and productive roofs (urban agriculture).</p>
+    <p class="body-text reveal" style="margin-bottom:1.7rem">Roof ecologies are still perceived as a relatively new or emerging architectural implementation within the built environment industry. Although vegetated roofs have historical precedents, modern roof ecology systems have developed significantly only over the past 30–50 years, particularly since the late 20th century. Early implementation was slow due to technological limitations, cost concerns, and lack of policy support. However, with rapid urbanisation, mega-infrastructure expansion, and increasing concerns over global warming, roof ecologies have become a critical strategy for mitigating environmental impact. Today, they are recognised not only for cooling individual buildings but also for improving the broader urban microclimate.</p>
+    <p class="body-text reveal" style="margin-bottom:1.7rem">Globally, environmental reports have highlighted the urgency of integrating ecological systems into cities. The Intergovernmental Panel on Climate Change (IPCC) reports that urban areas are highly vulnerable to heat stress, flooding, and environmental degradation due to dense built environments. Similarly, the European Environment Agency (EEA) identifies the urban heat island effect and stormwater flooding as key challenges in European cities. These reports emphasise the need for nature-based solutions, such as green roofs, to improve urban resilience.</p>
+    <p class="body-text reveal">As urban development replaces natural landscapes, green spaces are often lost to buildings and infrastructure. Roof ecologies emerged as a response, allowing cities to compensate for lost greenery by reintroducing vegetation onto rooftops. This approach reduces carbon dioxide (CO₂) emissions, mitigates the urban heat island effect, and enhances biodiversity without requiring additional land. It transforms underutilised roof surfaces into active ecological infrastructure.</p>
+  </div>
+</section>
+
+<!-- ══ §2 BASEL HERO IMAGE + INTRO ═══════════════════════════════════════ -->
+<section id="basel" class="two-col">
+  <div class="ih reveal" style="height:100%;min-height:480px;cursor:zoom-in" onclick="openLb('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=85','Basel\'s mandatory green roof policy — over 1 million m² of ecological roofscapes implemented across the city.')">
+    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=85" alt="Basel Switzerland" style="height:100%;min-height:480px" />
+  </div>
+  <div class="col-content reveal">
+    <p class="label" style="margin-bottom:1.6rem">Basel, Switzerland</p>
+    <p class="body-text" style="margin-bottom:1.5rem">The government of Switzerland has long supported this approach. In particular, Basel, located in northwestern Switzerland along the Rhine River, has been a pioneer in regulating and implementing green roofs since the 1990s. The city introduced financial incentive programmes between 1996 and 1997, followed by a mandatory green roof regulation in 2002. This policy was developed in collaboration with scientists and ecologists, ensuring that roof designs meet biodiversity and environmental performance criteria. On top of every flat roof in Basel — new and old — you'll soon find a thriving wildflower garden. For the past decade or so, the inner city has made it a requirement that all houses, offices and other buildings cover empty roof space with biodiverse greenery. All that natural insulation means lower energy bills, and the scheme has also made rare birds a more frequent sight throughout the city.</p>
+    <p class="body-text">The emphasis on roof ecology in Basel is driven by environmental challenges such as rising urban temperatures, increased rainfall intensity, and loss of natural habitats. Studies show that green roofs in Basel significantly reduce surface temperatures and stormwater runoff, helping to stabilise the urban microclimate. Reports from the European Environment Agency highlight Basel as a leading example of how green infrastructure can address both climate mitigation and adaptation.</p>
+  </div>
+</section>
+
+<!-- ══ §3 POLICY EVOLUTION ════════════════════════════════════════════════ -->
+<section class="section-off">
+  <div class="inner">
+    <p class="label reveal" style="margin-bottom:2.5rem">Policy Evolution</p>
+    <div class="two-col gap">
+      <div>
+        <p class="body-text reveal" style="margin-bottom:2rem">The city of Basel is widely recognised as one of the most advanced pioneers of roof ecology globally. It is estimated that over 1 million m² of green roofs have been implemented, representing a significant portion of the city's flat roof area. The policy evolution can be summarised as follows:</p>
+        <div>
+          <div class="timeline-row reveal">
+            <span class="period">1996–1997</span>
+            <span class="detail">Incentive programmes</span>
+          </div>
+          <div class="timeline-row reveal">
+            <span class="period">2002</span>
+            <span class="detail">Mandatory green roof implementation</span>
+          </div>
+          <div class="timeline-row reveal">
+            <span class="period">Post-2010</span>
+            <span class="detail">Enhanced biodiversity guidelines</span>
+          </div>
+          <div class="timeline-end"></div>
+        </div>
+      </div>
+      <div>
+        <p class="body-text reveal" style="margin-bottom:1.5rem">Unlike many other cities, Basel's policies require roofs to be designed as ecological habitats, incorporating native plant species, varied substrate depths, and micro-topography. This has influenced architects and planners to rethink rooftops as active environmental systems.</p>
+        <p class="body-text reveal">The scale of the project is unbelievable, with the green-roof mandate playing a large part in there now being five square metres of green space per inhabitant — the highest amount in any city, anywhere in the world. And while the gardens are all undeniably beautiful to look at (and make for a thoroughly pleasant place to live), there are plenty of other perks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ §4 DESIGN PRINCIPLES ══════════════════════════════════════════════ -->
+<section id="principles" class="section-principles">
+  <div class="inner">
+    <p class="label reveal" style="margin-bottom:1.8rem">Design Principles</p>
+    <p class="body-text reveal" style="max-width:720px;margin-bottom:3rem">The urban environment in Basel reflects this transformation, where rooftops contribute to a continuous ecological network across the city. Technologically, these systems consist of layered assemblies, including waterproofing membranes, root barriers, drainage systems, and engineered soil substrates. More importantly, they follow key design principles of roof ecology, including:</p>
+    <div class="five-col">
+      <div class="principle-col reveal">
+        <span class="num">01</span>
+        <p class="label-text">Biodiversity design</p>
+        <p class="detail-text">use of native species and habitat creation</p>
+      </div>
+      <div class="principle-col reveal">
+        <span class="num">02</span>
+        <p class="label-text">Multi-functionality</p>
+        <p class="detail-text">combining ecology, energy, and social use</p>
+      </div>
+      <div class="principle-col reveal">
+        <span class="num">03</span>
+        <p class="label-text">Water-sensitive design</p>
+        <p class="detail-text">stormwater retention and delayed runoff</p>
+      </div>
+      <div class="principle-col reveal">
+        <span class="num">04</span>
+        <p class="label-text">Thermal performance</p>
+        <p class="detail-text">reducing heat gain and improving insulation</p>
+      </div>
+      <div class="principle-col reveal">
+        <span class="num">05</span>
+        <p class="label-text">Adaptability</p>
+        <p class="detail-text">responding to local climate and building typology</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FULL-BLEED IMAGE ═══════════════════════════════════════════════════ -->
+<div class="full-bleed-img ih reveal" style="cursor:zoom-in" onclick="openLb('https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=1600&q=85','Biosolar roofs combine photovoltaic panels with biodiverse vegetation, merging energy production with ecological restoration.')">
+  <img src="https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=1600&q=85" alt="Biosolar roofs" />
+</div>
+<div class="full-bleed-caption reveal">
+  <p>Biosolar roofs combine photovoltaic panels with biodiverse vegetation, merging energy production with ecological restoration.</p>
+</div>
+
+<!-- ══ §5 SWISS EXEMPLARS ════════════════════════════════════════════════ -->
+<section class="section-padded">
+  <div class="inner">
+    <p class="label reveal" style="margin-bottom:1.8rem">Swiss Exemplars</p>
+    <div class="two-col gap">
+      <p class="body-text reveal">Several buildings in Switzerland exemplify these principles. The Volta Centre Basel features a biodiverse green roof designed with varied substrate depths to support different plant species and insects. The Messe Basel Exhibition Centre, designed by Herzog &amp; de Meuron, incorporates large-scale roof surfaces that integrate environmental strategies within a dense urban setting. Another example is the Sihlcity Complex in Zurich, where green roofs contribute to stormwater management and urban cooling. These projects demonstrate how roof ecologies can be applied across commercial, institutional, and mixed-use developments.</p>
+      <p class="body-text reveal">Beyond environmental benefits, these case studies also highlight social and community impacts. Accessible green roofs provide recreational spaces, educational opportunities, and improved mental well-being. In some cases, roofs are used as learning environments, allowing users to engage directly with ecological systems, reinforcing the relationship between architecture and nature.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PULLQUOTE ══════════════════════════════════════════════════════════ -->
+<section class="section-pullquote">
+  <p class="pullquote-text reveal">
+    "The environmental benefits of the scheme are huge. All that rooftop shrubbery stores a heck of a lot of carbon, slashing the city's net emissions. Biodiversity — extremely difficult to maintain in a modern city — also appears to be flourishing. Almost 80 species of beetle have been spotted, along with 40 types of spider (many of them endangered). The gardens also provide refuge for 175 plant species, including nine kinds of orchid. And, as flash floods increasingly threaten the lives of city-dwellers, the soil can reduce water run-off by up to 20 percent. So the gardens aren't just an attractive architectural feature — they're a vital part of the city's climate policy."
+  </p>
+</section>
+
+<!-- ══ §6 LOCAL CONTEXT ══════════════════════════════════════════════════ -->
+<section class="section-padded">
+  <div class="inner">
+    <p class="label reveal" style="margin-bottom:1.8rem">Local Context</p>
+    <div class="two-col gap">
+      <p class="body-text reveal">Locals are also big fans, partly because energy bills are massively reduced. During winter the leafy layer acts as insulation, trapping the heat inside, and in summer the temperature can be around five degrees lower. These benefits are obviously attractive, but it took legal action for the gardens to really take off across the city. Regulations dictate that new buildings have to have the roof forests installed, and whenever structural changes and checks take place on older properties, owners have to retrofit them with gardens too.</p>
+      <p class="body-text reveal">There's a historical precedent in Basel for these green roofs. In the 1970s a city hospital built a rooftop garden to improve experience for patients. Researchers drew on these early ideas for their own plans, scaling them up for the whole of Basel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ §7 CASE STUDIES ═══════════════════════════════════════════════════ -->
+<section id="casestudies" class="section-off">
+  <div class="inner" style="max-width:1160px">
+    <p class="label reveal" style="margin-bottom:2.5rem">Case Studies — Basel</p>
+
+    <!-- Tab Bar -->
+    <div class="cs-tabs">
+      <button class="cs-tab-btn active" onclick="switchTab(0)">
+        <span class="tab-num">01</span>
+        <span class="tab-title">Basel Cantonal Hospital Green Roof</span>
+      </button>
+      <button class="cs-tab-btn" onclick="switchTab(1)">
+        <span class="tab-num">02</span>
+        <span class="tab-title">Wollishofen Water Treatment Plant Roof</span>
+      </button>
+      <button class="cs-tab-btn" onclick="switchTab(2)">
+        <span class="tab-num">03</span>
+        <span class="tab-title">Wiesenplatz Tram Depot Green Roof</span>
+      </button>
+    </div>
+
+    <!-- Panel 01 -->
+    <div class="cs-panel active" id="cs-0">
+      <div>
+        <div class="cs-img ih" onclick="openLb('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&q=85','Multiple substrate depths replicate riverbank and meadow ecosystems.')">
+          <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&q=85" alt="Basel Cantonal Hospital" style="height:100%;min-height:340px" />
+        </div>
+        <p class="cs-caption">Multiple substrate depths replicate riverbank and meadow ecosystems.</p>
+      </div>
+      <div>
+        <div class="cat-block">
+          <p class="cat-label">Technical Design</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Multiple substrate depths (6 cm, 12 cm, 20 cm)</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Use of gravel, sand, and native soils to mimic natural habitats</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Layered system: waterproof membrane + drainage + substrate + vegetation</span></li>
+          </ul>
+          <p class="cat-note">↳ Designed to replicate riverbank and meadow ecosystems</p>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label">Building Performance</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Improves thermal insulation → reduces heat gain</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Stabilises indoor temperature</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Reduces energy demand for cooling</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label">Environmental Impact</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Supports high biodiversity (plants, insects, rare species)</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Functions as an urban habitat</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Acts as ecological "stepping stone" for species movement</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label insight">Key Insight</p>
+          <ul class="cat-points">
+            <li><span class="pt-text insight">This project shows that roof ecology can move beyond sustainability into ecological restoration.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 02 -->
+    <div class="cs-panel" id="cs-1">
+      <div>
+        <div class="cs-img ih" onclick="openLb('https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=900&q=85','One of the oldest green roofs globally — over 90 years of uninterrupted function.')">
+          <img src="https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=900&q=85" alt="Wollishofen Water Treatment Plant" style="height:100%;min-height:340px" />
+        </div>
+        <p class="cs-caption">One of the oldest green roofs globally — over 90 years of uninterrupted function.</p>
+      </div>
+      <div>
+        <div class="cat-block">
+          <p class="cat-label">Technical Design</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">One of the oldest green roofs (over 90 years old)</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Designed originally for cooling water tanks</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Maintains wet meadow ecosystems on roof surface</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label">Building Performance</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Passive cooling system reduces water temperature fluctuations</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Demonstrates long-term durability (over 90 years lifespan)</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label">Environmental Impact</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Hosts 175 plant species including endangered orchids</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Preserves ecosystems lost due to urbanisation</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label insight">Key Insight</p>
+          <ul class="cat-points">
+            <li><span class="pt-text insight">Shows that roof ecology is not a short-term trend and can function as long-term ecological infrastructure.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 03 -->
+    <div class="cs-panel" id="cs-2">
+      <div>
+        <div class="cs-img ih" onclick="openLb('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=900&q=85','A meadow carpet system designed at urban infrastructure scale — not just a building feature.')">
+          <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=900&q=85" alt="Wiesenplatz Tram Depot" style="height:100%;min-height:340px" />
+        </div>
+        <p class="cs-caption">A meadow carpet system designed at urban infrastructure scale — not just a building feature.</p>
+      </div>
+      <div>
+        <div class="cat-block">
+          <p class="cat-label">Technical Design</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Extensive green roof with native grasses and shrubs</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Structured layout with habitat zones</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Designed as a "meadow carpet" system</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label">Building Performance</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Reduces indoor temperature by up to ~5°C</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Improves roof insulation and energy efficiency</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label">Environmental Impact</p>
+          <ul class="cat-points">
+            <li><span class="dash">—</span><span class="pt-text">Reduces stormwater runoff by up to 17–20% (urban modelling)</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Mitigates urban heat island effect</span></li>
+            <li><span class="dash">—</span><span class="pt-text">Enhances air quality and carbon sequestration</span></li>
+          </ul>
+        </div>
+        <div class="cat-block">
+          <p class="cat-label insight">Key Insight</p>
+          <ul class="cat-points">
+            <li><span class="pt-text insight">Demonstrates how roof ecology works at urban infrastructure scale, not just buildings.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ §8 MALAYSIA / CONCLUSION ═════════════════════════════════════════ -->
+<section id="malaysia" class="two-col">
+  <div class="col-content reveal">
+    <p class="label" style="margin-bottom:1.6rem">Applicability — Kuala Lumpur</p>
+    <p class="body-text" style="margin-bottom:1.5rem">Malaysia has a tropical rainforest climate, characterised by high temperatures, humidity, and heavy rainfall, while Switzerland has a temperate climate. Despite these differences, roof ecology principles remain applicable. In fact, Malaysia's climate allows for continuous plant growth and high biodiversity potential. Urban challenges such as heat islands, flooding, and loss of green space are also present in Kuala Lumpur, making roof ecologies highly relevant.</p>
+    <p class="body-text" style="margin-bottom:1.5rem">Although Malaysia does not yet enforce mandatory green roof policies, frameworks such as the Green Building Index (GBI) promote sustainable strategies, including rooftop greenery. With further policy development and adaptation of Swiss strategies, roof ecologies could play a significant role in enhancing urban sustainability in Malaysia.</p>
+    <p class="body-text">In conclusion, roof ecology represents a shift towards integrating nature within architecture. Switzerland, particularly Basel, demonstrates a mature and research-driven model where roofs function as ecological infrastructure. By contrast, Kuala Lumpur represents an emerging context with strong potential for adaptation. Through the application of ecological design principles and supportive policies, roof ecologies can become a key strategy in addressing environmental challenges in rapidly urbanising cities.</p>
+  </div>
+  <div class="ih reveal" style="height:100%;min-height:480px;cursor:zoom-in" onclick="openLb('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&q=85','Kuala Lumpur — a rapidly urbanising city with strong potential for roof ecology adaptation.')">
+    <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&q=85" alt="Kuala Lumpur" style="height:100%;min-height:480px" />
+  </div>
+</section>
+
+<!-- ══ §9 REFERENCES ════════════════════════════════════════════════════ -->
+<section id="references" class="section-off">
+  <div class="inner">
+
+    <div class="ref-group">
+      <p class="label reveal" style="margin-bottom:1.6rem">Core Academic Sources</p>
+      <div class="ref-row reveal">
+        <span class="ref-label">Brenneisen, S. (2006)</span>
+        <div><span class="ref-title">Space for urban wildlife: Designing green roofs as habitats in Switzerland</span><span class="ref-pub">Urban Habitats, 4(1), 27–36</span></div>
+      </div>
+      <div class="ref-row reveal">
+        <span class="ref-label">Brenneisen, S. (2003)</span>
+        <div><span class="ref-title">The benefits of biodiversity from green roofs: Key design consequences</span><span class="ref-pub">Proceedings of the 1st North American Green Roof Conference</span></div>
+      </div>
+      <div class="ref-group-end"></div>
+    </div>
+
+    <div class="ref-group">
+      <p class="label reveal" style="margin-bottom:1.6rem">Policy + Case Study (Basel)</p>
+      <div class="ref-row reveal">
+        <span class="ref-label">European Environment Agency (2016)</span>
+        <div><span class="ref-title">Green roofs in Basel, Switzerland: Combining mitigation and adaptation measures</span><span class="ref-pub">climate-adapt.eea.europa.eu</span></div>
+      </div>
+      <div class="ref-row reveal">
+        <span class="ref-label">NetworkNature (n.d.)</span>
+        <div><span class="ref-title">Green roofs in Basel: Nature-based solutions case study</span><span class="ref-pub">networknature.eu</span></div>
+      </div>
+      <div class="ref-row reveal">
+        <span class="ref-label">Oppla (n.d.)</span>
+        <div><span class="ref-title">Basel, Switzerland: Green roofs combining mitigation and adaptation measures</span><span class="ref-pub">oppla.eu</span></div>
+      </div>
+      <div class="ref-group-end"></div>
+    </div>
+
+    <div class="ref-group">
+      <p class="label reveal" style="margin-bottom:1.6rem">Technical &amp; Performance Studies</p>
+      <div class="ref-row reveal">
+        <span class="ref-label">Getter, K. L., &amp; Rowe, D. B. (2006)</span>
+        <div><span class="ref-title">The role of extensive green roofs in sustainable development</span><span class="ref-pub">HortScience, 41(5), 1276–1285</span></div>
+      </div>
+      <div class="ref-row reveal">
+        <span class="ref-label">Oberndorfer, E., et al. (2007)</span>
+        <div><span class="ref-title">Green roofs as urban ecosystems: Ecological structures, functions, and services</span><span class="ref-pub">BioScience, 57(10), 823–833</span></div>
+      </div>
+      <div class="ref-row reveal">
+        <span class="ref-label">Speak, A. F., et al. (2013)</span>
+        <div><span class="ref-title">Rainwater runoff retention on an aged intensive green roof</span><span class="ref-pub">Science of the Total Environment, 461–462, 28–38</span></div>
+      </div>
+      <div class="ref-group-end"></div>
+    </div>
+
+    <div class="ref-group">
+      <p class="label reveal" style="margin-bottom:1.6rem">Long-Term &amp; Biodiversity Evidence (Swiss Context)</p>
+      <div class="ref-row reveal">
+        <span class="ref-label">Brenneisen, S. (2008)</span>
+        <div><span class="ref-title">Designing green roofs for urban biodiversity</span><span class="ref-pub">Proceedings of the International Green Roof Congress</span></div>
+      </div>
+      <div class="ref-row reveal">
+        <span class="ref-label">Kadas, G. (2006)</span>
+        <div><span class="ref-title">Rare invertebrates colonizing green roofs in London</span><span class="ref-pub">Urban Habitats, 4(1). (Useful comparative support for biodiversity claims)</span></div>
+      </div>
+      <div class="ref-group-end"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════════════════ -->
+<footer>
+  <span>Roof Ecologies</span>
+  <span>Universiti Malaya · Kuala Lumpur</span>
+  <span>Urban Ecology Research, 2024</span>
+</footer>
+
+<!-- ══ LIGHTBOX ══════════════════════════════════════════════════════════ -->
+<div id="lightbox" onclick="closeLb()">
+  <button id="lightbox-close" onclick="closeLb()">Close ×</button>
+  <img id="lb-img" src="" alt="" onclick="event.stopPropagation()" />
+  <p id="lb-caption"></p>
+</div>
+
+<!-- ══ JAVASCRIPT ════════════════════════════════════════════════════════ -->
+<script>
+  /* ── Scroll-based nav ─────────────────────────────────────────────── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 30);
+  });
+
+  /* ── Reveal on scroll ────────────────────────────────────────────── */
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.07 });
+  revealEls.forEach(el => observer.observe(el));
+
+  /* ── Case study tabs ─────────────────────────────────────────────── */
+  function switchTab(index) {
+    document.querySelectorAll('.cs-tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.cs-panel').forEach((panel, i) => {
+      panel.classList.toggle('active', i === index);
+    });
+  }
+
+  /* ── Lightbox ────────────────────────────────────────────────────── */
+  function openLb(src, caption) {
+    document.getElementById('lb-img').src = src;
+    document.getElementById('lb-caption').textContent = caption;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLb() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLb();
+  });
+</script>
+
+</body>
+</html>
