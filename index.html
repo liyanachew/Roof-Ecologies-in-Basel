@@ -287,6 +287,43 @@
       color: var(--mid);
       letter-spacing: 0.04em;
     }
+    .two-img {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .img-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .img-block img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .img-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      margin-top: 0.8rem;
+      opacity: 0.8;
+    }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .two-img {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .two-img {
+    grid-template-columns: 1fr;
+  }
+}
 
     /* ─── PULLQUOTE ─────────────────────────────────────────────────────── */
     .section-pullquote {
@@ -536,14 +573,38 @@
 </section>
 
 <!-- ══ §1 INTRODUCTION ═══════════════════════════════════════════════════ -->
-<section id="overview" class="section-intro">
-  <div class="inner">
-    <p class="label reveal" style="margin-bottom:2.5rem">Introduction</p>
-    <p class="body-text reveal" style="margin-bottom:1.7rem">Roof ecologies refer to the intentional design and integration of ecological systems on rooftops, transforming them into functional landscapes that support environmental performance, biodiversity, and human activity. Unlike conventional green roofs that may be purely aesthetic, roof ecologies emphasise multi-functionality, where roofs act as micro-ecosystems, contributing to climate regulation, water management, and social engagement. This includes systems such as biodiversity roofs, biosolar roofs (green roof + solar panels), blue-green roofs (water retention + vegetation), and productive roofs (urban agriculture).</p>
-    <p class="body-text reveal" style="margin-bottom:1.7rem">Roof ecologies are still perceived as a relatively new or emerging architectural implementation within the built environment industry. Although vegetated roofs have historical precedents, modern roof ecology systems have developed significantly only over the past 30–50 years, particularly since the late 20th century. Early implementation was slow due to technological limitations, cost concerns, and lack of policy support. However, with rapid urbanisation, mega-infrastructure expansion, and increasing concerns over global warming, roof ecologies have become a critical strategy for mitigating environmental impact. Today, they are recognised not only for cooling individual buildings but also for improving the broader urban microclimate.</p>
-    <p class="body-text reveal" style="margin-bottom:1.7rem">Globally, environmental reports have highlighted the urgency of integrating ecological systems into cities. The Intergovernmental Panel on Climate Change (IPCC) reports that urban areas are highly vulnerable to heat stress, flooding, and environmental degradation due to dense built environments. Similarly, the European Environment Agency (EEA) identifies the urban heat island effect and stormwater flooding as key challenges in European cities. These reports emphasise the need for nature-based solutions, such as green roofs, to improve urban resilience.</p>
-    <p class="body-text reveal">As urban development replaces natural landscapes, green spaces are often lost to buildings and infrastructure. Roof ecologies emerged as a response, allowing cities to compensate for lost greenery by reintroducing vegetation onto rooftops. This approach reduces carbon dioxide (CO₂) emissions, mitigates the urban heat island effect, and enhances biodiversity without requiring additional land. It transforms underutilised roof surfaces into active ecological infrastructure.</p>
+<section id="overview" class="two-col">
+
+  <!-- LEFT: TEXT -->
+  <div class="col-content reveal">
+    <p class="label" style="margin-bottom:2.5rem">Introduction</p>
+
+    <p class="body-text" style="margin-bottom:1.7rem">
+      Roof ecologies refer to the intentional design and integration of ecological systems on rooftops, transforming them into functional landscapes that support environmental performance, biodiversity, and human activity. Unlike conventional green roofs that may be purely aesthetic, roof ecologies emphasise multi-functionality, where roofs act as micro-ecosystems, contributing to climate regulation, water management, and social engagement. This includes systems such as biodiversity roofs, biosolar roofs (green roof + solar panels), blue-green roofs (water retention + vegetation), and productive roofs (urban agriculture).
+    </p>
+
+    <p class="body-text" style="margin-bottom:1.7rem">
+      Roof ecologies are still perceived as a relatively new or emerging architectural implementation within the built environment industry. Although vegetated roofs have historical precedents, modern roof ecology systems have developed significantly only over the past 30–50 years, particularly since the late 20th century. Early implementation was slow due to technological limitations, cost concerns, and lack of policy support. However, with rapid urbanisation, mega-infrastructure expansion, and increasing concerns over global warming, roof ecologies have become a critical strategy for mitigating environmental impact. Today, they are recognised not only for cooling individual buildings but also for improving the broader urban microclimate.
+    </p>
+
+    <p class="body-text" style="margin-bottom:1.7rem">
+      Globally, environmental reports have highlighted the urgency of integrating ecological systems into cities. The Intergovernmental Panel on Climate Change (IPCC) reports that urban areas are highly vulnerable to heat stress, flooding, and environmental degradation due to dense built environments. Similarly, the European Environment Agency (EEA) identifies the urban heat island effect and stormwater flooding as key challenges in European cities. These reports emphasise the need for nature-based solutions, such as green roofs, to improve urban resilience.
+    </p>
+
+    <p class="body-text">
+      As urban development replaces natural landscapes, green spaces are often lost to buildings and infrastructure. Roof ecologies emerged as a response, allowing cities to compensate for lost greenery by reintroducing vegetation onto rooftops. This approach reduces carbon dioxide (CO₂) emissions, mitigates the urban heat island effect, and enhances biodiversity without requiring additional land. It transforms underutilised roof surfaces into active ecological infrastructure.
+    </p>
   </div>
+
+  <!-- RIGHT: IMAGE -->
+  <div class="ih reveal" style="height:100%;min-height:480px;cursor:zoom-in"
+       onclick="openLb('Images/intro.jpeg','2026 Liyana Chew. Types of Roof Ecology. Architecture Blog: Roof Ecology in Basel, Switzerland.')">
+       
+    <img src="Images/intro.jpeg"
+         alt="Roof Ecology"
+         style="height:100%;min-height:480px" />
+  </div>
+
 </section>
 
 <!-- ══ §2 BASEL HERO IMAGE + INTRO ═══════════════════════════════════════ -->
@@ -562,9 +623,13 @@
 <section class="section-off">
   <div class="inner">
     <p class="label reveal" style="margin-bottom:2.5rem">Policy Evolution</p>
+
     <div class="two-col gap">
       <div>
-        <p class="body-text reveal" style="margin-bottom:2rem">The city of Basel is widely recognised as one of the most advanced pioneers of roof ecology globally. It is estimated that over 1 million m² of green roofs have been implemented, representing a significant portion of the city's flat roof area. The policy evolution can be summarised as follows:</p>
+        <p class="body-text reveal" style="margin-bottom:2rem">
+          The city of Basel is widely recognised as one of the most advanced pioneers of roof ecology globally...
+        </p>
+
         <div>
           <div class="timeline-row reveal">
             <span class="period">1996–1997</span>
@@ -581,11 +646,25 @@
           <div class="timeline-end"></div>
         </div>
       </div>
+
       <div>
-        <p class="body-text reveal" style="margin-bottom:1.5rem">Unlike many other cities, Basel's policies require roofs to be designed as ecological habitats, incorporating native plant species, varied substrate depths, and micro-topography. This has influenced architects and planners to rethink rooftops as active environmental systems.</p>
-        <p class="body-text reveal">The scale of the project is unbelievable, with the green-roof mandate playing a large part in there now being five square metres of green space per inhabitant — the highest amount in any city, anywhere in the world. And while the gardens are all undeniably beautiful to look at (and make for a thoroughly pleasant place to live), there are plenty of other perks.</p>
+        <p class="body-text reveal" style="margin-bottom:1.5rem">
+          Unlike many other cities, Basel's policies require roofs to be designed as ecological habitats...
+        </p>
+        <p class="body-text reveal">
+          The scale of the project is unbelievable...
+        </p>
       </div>
     </div>
+
+    <!-- 👇 IMAGE ADDED HERE -->
+    <div class="ih reveal" style="margin-top:3rem; cursor:zoom-in"
+         onclick="openLb('Images/policy.jpeg','2026 Liyana Chew. Roof Ecology Benefits. Architecture Blog: Roof Ecology in Basel, Switzerland.')">
+      <img src="Images/policy.jpeg"
+           alt="Basel Green Roof"
+           style="width:100%; height:auto; border-radius:12px;" />
+    </div>
+
   </div>
 </section>
 
@@ -624,12 +703,31 @@
   </div>
 </section>
 
-<!-- ══ FULL-BLEED IMAGE ═══════════════════════════════════════════════════ -->
-<div class="full-bleed-img ih reveal" style="cursor:zoom-in" onclick="openLb('Images/bc345b60-732a-42d8-ab49-a668387756ac.jpg','Zhang, G., He, B.-J., Zhu, Z., & Dewancker, B. J. (2019). A schematic structure of an extensive green roof and an intensive green roof, and the cooling mechanism in the daytime [Figure]. In Impact of morphological characteristics of green roofs on pedestrian cooling in subtropical climates. ResearchGate.')">
-  <img src="Images/bc345b60-732a-42d8-ab49-a668387756ac.jpg" alt="Biosolar roofs" />
-</div>
-<div class="full-bleed-caption reveal">
-  <p>Zhang, G., He, B.-J., Zhu, Z., & Dewancker, B. J. (2019). A schematic structure of an extensive green roof and an intensive green roof, and the cooling mechanism in the daytime [Figure]. In Impact of morphological characteristics of green roofs on pedestrian cooling in subtropical climates. ResearchGate.</p>
+<!-- ══ FULL-BLEED DOUBLE IMAGE ═══════════════════════════════════════════ -->
+<div class="full-bleed-img two-img reveal">
+
+  <!-- IMAGE 1 -->
+  <div class="img-block">
+    <div class="ih" style="cursor:zoom-in"
+         onclick="openLb('Images/concept.jpeg','2026 Liyana Chew. Green Roof Passive Cooling. Architecture Blog: Roof Ecology in Basel, Switzerland')">
+      <img src="Images/concept.jpeg" alt="Green roof diagram" />
+    </div>
+    <p class="img-caption reveal">
+      2026 Liyana Chew. "Green Roof Passive Cooling." Architecture Blog: Roof Ecology in Basel, Switzerland
+    </p>
+  </div>
+
+  <!-- IMAGE 2 -->
+  <div class="img-block">
+    <div class="ih" style="cursor:zoom-in"
+         onclick="openLb('Images/bc345b60-732a-42d8-ab49-a668387756ac.jpg','Zhang et al. (2019)')">
+      <img src="Images/bc345b60-732a-42d8-ab49-a668387756ac.jpg" alt="Second image" />
+    </div>
+    <p class="img-caption reveal">
+      Zhang, G., He, B.-J., Zhu, Z., & Dewancker, B. J. (2019)
+    </p>
+  </div>
+
 </div>
 
 <!-- ══ §5 SWISS EXEMPLARS ════════════════════════════════════════════════ -->
@@ -890,7 +988,7 @@
 
 <!-- ══ FOOTER ════════════════════════════════════════════════════════════ -->
 <footer>
-  <span>Roof Ecologies</span>
+  <span>Architectural Comparative Studies</span>
   <span>Universiti Malaya · Kuala Lumpur</span>
   <span>Liyana Chew, 2026</span>
 </footer>
